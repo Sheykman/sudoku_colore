@@ -72,46 +72,39 @@ def creer_sudoku():
 def trouver_coleurs_dispo(graphe, sommet, sommets_colories):
     # Liste des couleurs disponibles
     lst_couleurs = list(range(9))
-
     # On enlève de la liste les couleurs des voisins
     for voisin in graphe.neighbors(sommet):
-        lst_couleurs.remove(sommets_colories.get(voisin))
+        if voisin in sommets_colories:
+            if sommets_colories[voisin] in lst_couleurs:
+                lst_couleurs.remove(sommets_colories[voisin])
     
     # Si le sommet est déjà coloré, on enlève cette couleur de la liste
-    if sommets_colories.get(sommet) in lst_couleurs:
-        lst_couleurs.remove(sommets_colories.get(sommet))
+    if sommet in sommets_colories:
+        lst_couleurs.remove(sommets_colories[sommet])
 
     return lst_couleurs
 
 
 def backtracking(graphe, sommet, sommets_colories):
-    for voisin in graphe.neighbors(sommet):
-        if voisin in sommets_colories:
+    while(len(trouver_coleurs_dispo(graphe, sommet, sommets_colories)) == 0):
+        for voisin in sommets_colories:
             couleurs_dispo = trouver_coleurs_dispo(graphe, voisin, sommets_colories)
             if len(couleurs_dispo) != 0:
                 sommets_colories[voisin] = couleurs_dispo[0]
-                break
-            else:
-                backtracking(graphe, voisin, sommets_colories)
     return sommets_colories
 
 
 def coloration(graphe):
 
-    # Initialisation de l'index de couleur
-    index_couleur_courant = 0
-
     sommets_colories = {}
-
-    lst_couleurs = list(range(9))
     
     for sommet in graphe.vertices():
         # On récupère la liste des couleurs disponibles pour chaque sommet
         couleurs_dispo = trouver_coleurs_dispo(graphe, sommet, sommets_colories)
 
         if len(couleurs_dispo) == 0:
-            # Si aucune couleur n'est disponible on regarde si on peut changer la couleur d'ancien sommet
-            sommets_colories = backtracking(graphe, sommet, sommets_colories)
+            # Si aucune couleur n'est disponible on regarde si on peut changer la couleur d'anciens sommets
+            backtracking(graphe, sommet, sommets_colories)
         else:
             sommets_colories[sommet] = couleurs_dispo[0]
     
@@ -123,8 +116,8 @@ def main():
     Graphe = creer_sudoku()
 
     # Vérifications
-    print(f"Nombre de sommets créés : {G.num_verts()} (attendu : 81)")
-    print(f"Nombre d'arêtes créées : {G.num_edges()} (attendu : 810)")
+    print(f"Nombre de sommets créés : {Graphe.num_verts()} (attendu : 81)")
+    print(f"Nombre d'arêtes créées : {Graphe.num_edges()} (attendu : 810)")
 
     Graphe_colore = coloration(Graphe)
 
