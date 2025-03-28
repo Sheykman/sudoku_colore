@@ -85,35 +85,44 @@ def trouver_coleurs_dispo(graphe, sommet, sommets_colories):
     return lst_couleurs
 
 
-def backtracking(graphe, sommet, sommets_colories):
-    lst_voisin = {}
-    for voisin in sommets_colories:
-        couleurs_dispo = trouver_coleurs_dispo(graphe, voisin, sommets_colories)
-        if len(couleurs_dispo) != 0:
-            lst_voisin[voisin] = couleurs_dispo
-    print("Sommet : ", sommet)
-    print("Liste des voisins : ", lst_voisin)
-    #while(len(trouver_coleurs_dispo(graphe, sommet, sommets_colories)) == 0):
+def backtracking(graphe, sommets_restants, sommets_colories):
+    # Condition d'arrêt : tous les sommets sont coloriés
+    if not sommets_restants:
+        return sommets_colories
 
-    return sommets_colories
+    sommet = sommets_restants[0]
 
+    couleurs_dispo = trouver_coleurs_dispo(graphe, sommet, sommets_colories)
+    
+    # On essaye chaque couleur disponible
+    for couleur in couleurs_dispo:
+        # On créé une copie du dictionnaire de sommets coloriés
+        nouvelle_coloration = sommets_colories.copy()
+        nouvelle_coloration[sommet] = couleur
+        
+        # On créé une nouvelle liste de sommets restants sans le sommet actuel
+        nouveaux_sommets_restants = sommets_restants[1:]
+        
+        # On essaye de colorier le reste du graphe
+        resultat = backtracking(graphe, nouveaux_sommets_restants, nouvelle_coloration)
+        
+        # Si une solution est trouvée, la retourner
+        if resultat is not None:
+            return resultat
+    
+    # Si aucune solution n'a été trouvée on retourne None
+    return None
 
 def coloration(graphe):
-
-    sommets_colories = {}
+    # On convertit la liste des sommets en liste
+    sommets = list(graphe.vertices())
     
-    for sommet in graphe.vertices():
-        # On récupère la liste des couleurs disponibles pour chaque sommet
-        couleurs_dispo = trouver_coleurs_dispo(graphe, sommet, sommets_colories)
-
-        if len(couleurs_dispo) == 0:
-            # Si aucune couleur n'est disponible on regarde si on peut changer la couleur d'anciens sommets
-            backtracking(graphe, sommet, sommets_colories)
-        else:
-            sommets_colories[sommet] = couleurs_dispo[0]
+    resultat = backtracking(graphe, sommets, {})
     
-    return sommets_colories
-
+    if resultat is None:
+        raise ValueError("Impossible de colorier le graphe")
+    
+    return resultat
 
 
 def main():
