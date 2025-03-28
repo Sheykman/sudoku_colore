@@ -86,11 +86,15 @@ def trouver_coleurs_dispo(graphe, sommet, sommets_colories):
 
 
 def backtracking(graphe, sommet, sommets_colories):
-    while(len(trouver_coleurs_dispo(graphe, sommet, sommets_colories)) == 0):
-        for voisin in sommets_colories:
-            couleurs_dispo = trouver_coleurs_dispo(graphe, voisin, sommets_colories)
-            if len(couleurs_dispo) != 0:
-                sommets_colories[voisin] = couleurs_dispo[0]
+    lst_voisin = {}
+    for voisin in sommets_colories:
+        couleurs_dispo = trouver_coleurs_dispo(graphe, voisin, sommets_colories)
+        if len(couleurs_dispo) != 0:
+            lst_voisin[voisin] = couleurs_dispo
+    print("Sommet : ", sommet)
+    print("Liste des voisins : ", lst_voisin)
+    #while(len(trouver_coleurs_dispo(graphe, sommet, sommets_colories)) == 0):
+
     return sommets_colories
 
 
